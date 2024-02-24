@@ -1,0 +1,14 @@
+{
+    "name": "Gilzoide.TextureAsyncApply",
+    "rootNamespace": "Gilzoide.TextureAsyncApply",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
