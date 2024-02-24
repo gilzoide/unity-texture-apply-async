@@ -42,6 +42,15 @@ namespace Gilzoide.TextureApplyAsync
             Dispose();
         }
 
+        public NativeArray<TPixel> GetPixelData<TPixel>() where TPixel : struct
+        {
+            if (UnsafeUtility.SizeOf<TPixel>() != Buffer.Length / (Texture.width * Texture.height))
+            {
+                throw new ArgumentException("Pixel type does not match texture pixel size.", nameof(TPixel));
+            }
+            return Buffer.Reinterpret<TPixel>(sizeof(byte));
+        }
+
         public void RegisterInRenderLoop()
         {
             TextureAsyncApplier.Register(this);
