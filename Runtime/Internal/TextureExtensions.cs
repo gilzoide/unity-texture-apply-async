@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 namespace Gilzoide.TextureAsyncApply
 {
@@ -6,207 +7,143 @@ namespace Gilzoide.TextureAsyncApply
     {
         public static int GetSizeInBytes(this Texture2D texture)
         {
+            return GetSizeInBytes(texture.width, texture.height, texture.graphicsFormat);
+        }
+
+        public static int GetSizeInBytes(int width, int height, GraphicsFormat format)
+        {
 #if UNITY_2022_2_OR_NEWER
-            return (int) UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipmapSize(texture.width, texture.height, texture.format);
+            return (int) GraphicsFormatUtility.ComputeMipmapSize(width, height, format);
 #else
-            int pixelCount = texture.width * texture.height;
-            switch (texture.format)
+            int pixelCount = width * height;
+            switch (format)
             {
-                //
-                // Summary:
-                //     Alpha-only texture format, 8 bit integer.
-                case TextureFormat.Alpha8:
-                    return pixelCount;
-                //
-                // Summary:
-                //     A 16 bits/pixel texture format. Texture stores color with an alpha channel.
-                case TextureFormat.ARGB4444:
+                case GraphicsFormat.R8_SRGB:
+                case GraphicsFormat.R8_UNorm:
+                case GraphicsFormat.R8_SNorm:
+                case GraphicsFormat.R8_UInt:
+                case GraphicsFormat.R8_SInt:
+                case GraphicsFormat.S8_UInt:
+                    return pixelCount * 1;
+
+                case GraphicsFormat.R8G8_SRGB:
+                case GraphicsFormat.R8G8_UNorm:
+                case GraphicsFormat.R8G8_SNorm:
+                case GraphicsFormat.R8G8_UInt:
+                case GraphicsFormat.R8G8_SInt:
                     return pixelCount * 2;
-                //
-                // Summary:
-                //     Color texture format, 8-bits per channel.
-                case TextureFormat.RGB24:
-                    return pixelCount;
-                //
-                // Summary:
-                //     Color with alpha texture format, 8-bits per channel.
-                case TextureFormat.RGBA32:
+
+                case GraphicsFormat.R8G8B8_SRGB:
+                case GraphicsFormat.R8G8B8_UNorm:
+                case GraphicsFormat.R8G8B8_SNorm:
+                case GraphicsFormat.R8G8B8_UInt:
+                case GraphicsFormat.R8G8B8_SInt:
+                case GraphicsFormat.B8G8R8_SRGB:
+                case GraphicsFormat.B8G8R8_UNorm:
+                case GraphicsFormat.B8G8R8_SNorm:
+                case GraphicsFormat.B8G8R8_UInt:
+                case GraphicsFormat.B8G8R8_SInt:
+                    return pixelCount * 3;
+
+                case GraphicsFormat.R8G8B8A8_SRGB:
+                case GraphicsFormat.R8G8B8A8_UNorm:
+                case GraphicsFormat.R8G8B8A8_SNorm:
+                case GraphicsFormat.R8G8B8A8_UInt:
+                case GraphicsFormat.R8G8B8A8_SInt:
+                case GraphicsFormat.B8G8R8A8_SRGB:
+                case GraphicsFormat.B8G8R8A8_UNorm:
+                case GraphicsFormat.B8G8R8A8_SNorm:
+                case GraphicsFormat.B8G8R8A8_UInt:
+                case GraphicsFormat.B8G8R8A8_SInt:
                     return pixelCount * 4;
-                //
-                // Summary:
-                //     Color with alpha texture format, 8-bits per channel.
-                case TextureFormat.ARGB32:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     A 16 bit color texture format.
-                case TextureFormat.RGB565:
+
+                case GraphicsFormat.R16_UNorm:
+                case GraphicsFormat.R16_SNorm:
+                case GraphicsFormat.R16_UInt:
+                case GraphicsFormat.R16_SInt:
+                case GraphicsFormat.R16_SFloat:
+                case GraphicsFormat.D16_UNorm:
                     return pixelCount * 2;
-                //
-                // Summary:
-                //     Single channel (R) texture format, 16 bit integer.
-                case TextureFormat.R16:
-                    return pixelCount * 2;
-                //
-                // Summary:
-                //     Compressed color texture format.
-                case TextureFormat.DXT1:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     Compressed color with alpha channel texture format.
-                case TextureFormat.DXT5:
-                    return pixelCount;
-                //
-                // Summary:
-                //     Color and alpha texture format, 4 bit per channel.
-                case TextureFormat.RGBA4444:
-                    return pixelCount * 2;
-                //
-                // Summary:
-                //     Color with alpha texture format, 8-bits per channel.
-                case TextureFormat.BGRA32:
+
+                case GraphicsFormat.R16G16_UNorm:
+                case GraphicsFormat.R16G16_SNorm:
+                case GraphicsFormat.R16G16_UInt:
+                case GraphicsFormat.R16G16_SInt:
+                case GraphicsFormat.R16G16_SFloat:
                     return pixelCount * 4;
-                //
-                // Summary:
-                //     Scalar (R) texture format, 16 bit floating point.
-                case TextureFormat.RHalf:
-                    return pixelCount * 2;
-                //
-                // Summary:
-                //     Two color (RG) texture format, 16 bit floating point per channel.
-                case TextureFormat.RGHalf:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     RGB color and alpha texture format, 16 bit floating point per channel.
-                case TextureFormat.RGBAHalf:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     Scalar (R) texture format, 32 bit floating point.
-                case TextureFormat.RFloat:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     Two color (RG) texture format, 32 bit floating point per channel.
-                case TextureFormat.RGFloat:
-                    return pixelCount * 8;
-                //
-                // Summary:
-                //     RGB color and alpha texture format, 32-bit floats per channel.
-                case TextureFormat.RGBAFloat:
-                    return pixelCount * 16;
-                //
-                // Summary:
-                //     RGB HDR format, with 9 bit mantissa per channel and a 5 bit shared exponent.
-                case TextureFormat.RGB9e5Float:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     Compressed one channel (R) texture format.
-                case TextureFormat.BC4:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     Compressed two-channel (RG) texture format.
-                case TextureFormat.BC5:
-                    return pixelCount;
-                //
-                // Summary:
-                //     HDR compressed color texture format.
-                case TextureFormat.BC6H:
-                    return pixelCount;
-                //
-                // Summary:
-                //     High quality compressed color texture format.
-                case TextureFormat.BC7:
-                    return pixelCount;
-                //
-                // Summary:
-                //     PowerVR (iOS) 2 bits/pixel compressed color texture format.
-                case TextureFormat.PVRTC_RGB2:
-                    return pixelCount / 4;
-                //
-                // Summary:
-                //     PowerVR (iOS) 2 bits/pixel compressed with alpha channel texture format.
-                case TextureFormat.PVRTC_RGBA2:
-                    return pixelCount / 4;
-                //
-                // Summary:
-                //     PowerVR (iOS) 4 bits/pixel compressed color texture format.
-                case TextureFormat.PVRTC_RGB4:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     PowerVR (iOS) 4 bits/pixel compressed with alpha channel texture format.
-                case TextureFormat.PVRTC_RGBA4:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     ETC (GLES2.0) 4 bits/pixel compressed RGB texture format.
-                case TextureFormat.ETC_RGB4:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     ETC2 EAC (GL ES 3.0) 4 bitspixel compressed unsigned single-channel texture format.
-                case TextureFormat.EAC_R:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     ETC2 EAC (GL ES 3.0) 4 bitspixel compressed signed single-channel texture format.
-                case TextureFormat.EAC_R_SIGNED:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     ETC2 EAC (GL ES 3.0) 8 bitspixel compressed unsigned dual-channel (RG) texture
-                //     format.
-                case TextureFormat.EAC_RG:
-                    return pixelCount;
-                //
-                // Summary:
-                //     ETC2 EAC (GL ES 3.0) 8 bitspixel compressed signed dual-channel (RG) texture
-                //     format.
-                case TextureFormat.EAC_RG_SIGNED:
-                    return pixelCount;
-                //
-                // Summary:
-                //     ETC2 (GL ES 3.0) 4 bits/pixel compressed RGB texture format.
-                case TextureFormat.ETC2_RGB:
-                    return pixelCount / 2;
-                //
-                // Summary:
-                //     ETC2 (GL ES 3.0) 8 bits/pixel compressed RGBA texture format.
-                case TextureFormat.ETC2_RGBA8:
-                    return pixelCount;
-                //
-                // Summary:
-                //     Two color (RG) texture format, 8-bits per channel.
-                case TextureFormat.RG16:
-                    return pixelCount * 2;
-                //
-                // Summary:
-                //     Single channel (R) texture format, 8 bit integer.
-                case TextureFormat.R8:
-                    return pixelCount;
-                //
-                // Summary:
-                //     Two channel (RG) texture format, 16 bit integer per channel.
-                case TextureFormat.RG32:
-                    return pixelCount * 4;
-                //
-                // Summary:
-                //     Three channel (RGB) texture format, 16 bit integer per channel.
-                case TextureFormat.RGB48:
+
+                case GraphicsFormat.R16G16B16_UNorm:
+                case GraphicsFormat.R16G16B16_SNorm:
+                case GraphicsFormat.R16G16B16_UInt:
+                case GraphicsFormat.R16G16B16_SInt:
+                case GraphicsFormat.R16G16B16_SFloat:
                     return pixelCount * 6;
-                //
-                // Summary:
-                //     Four channel (RGBA) texture format, 16 bit integer per channel.
-                case TextureFormat.RGBA64:
+
+                case GraphicsFormat.R16G16B16A16_UNorm:
+                case GraphicsFormat.R16G16B16A16_SNorm:
+                case GraphicsFormat.R16G16B16A16_UInt:
+                case GraphicsFormat.R16G16B16A16_SInt:
+                case GraphicsFormat.R16G16B16A16_SFloat:
                     return pixelCount * 8;
 
+                case GraphicsFormat.R32_UInt:
+                case GraphicsFormat.R32_SInt:
+                case GraphicsFormat.R32_SFloat:
+                    return pixelCount * 4;
+
+                case GraphicsFormat.R32G32_UInt:
+                case GraphicsFormat.R32G32_SInt:
+                case GraphicsFormat.R32G32_SFloat:
+                    return pixelCount * 8;
+
+                case GraphicsFormat.R32G32B32_UInt:
+                case GraphicsFormat.R32G32B32_SInt:
+                case GraphicsFormat.R32G32B32_SFloat:
+                    return pixelCount * 12;
+
+                case GraphicsFormat.R32G32B32A32_UInt:
+                case GraphicsFormat.R32G32B32A32_SInt:
+                case GraphicsFormat.R32G32B32A32_SFloat:
+                    return pixelCount * 16;
+
+                case GraphicsFormat.R4G4B4A4_UNormPack16:
+                case GraphicsFormat.B4G4R4A4_UNormPack16:
+                case GraphicsFormat.R5G6B5_UNormPack16:
+                case GraphicsFormat.B5G6R5_UNormPack16:
+                case GraphicsFormat.R5G5B5A1_UNormPack16:
+                case GraphicsFormat.B5G5R5A1_UNormPack16:
+                case GraphicsFormat.A1R5G5B5_UNormPack16:
+                    return pixelCount * 2;
+
+                case GraphicsFormat.E5B9G9R9_UFloatPack32:
+                case GraphicsFormat.B10G11R11_UFloatPack32:
+                case GraphicsFormat.A2B10G10R10_UNormPack32:
+                case GraphicsFormat.A2B10G10R10_UIntPack32:
+                case GraphicsFormat.A2B10G10R10_SIntPack32:
+                case GraphicsFormat.A2R10G10B10_UNormPack32:
+                case GraphicsFormat.A2R10G10B10_UIntPack32:
+                case GraphicsFormat.A2R10G10B10_SIntPack32:
+                case GraphicsFormat.A2R10G10B10_XRSRGBPack32:
+                case GraphicsFormat.A2R10G10B10_XRUNormPack32:
+                case GraphicsFormat.R10G10B10_XRSRGBPack32:
+                case GraphicsFormat.R10G10B10_XRUNormPack32:
+                case GraphicsFormat.A10R10G10B10_XRSRGBPack32:
+                case GraphicsFormat.A10R10G10B10_XRUNormPack32:
+                    return pixelCount * 4;
+
+                case GraphicsFormat.D24_UNorm:
+                case GraphicsFormat.D24_UNorm_S8_UInt:
+                case GraphicsFormat.D32_SFloat:
+                    return pixelCount * 4;
+
+                case GraphicsFormat.D32_SFloat_S8_UInt:
+                    return pixelCount * 8;
+
+                case GraphicsFormat.D16_UNorm_S8_UInt:
+                    return pixelCount * 3;
+
                 default:
-                    throw new System.ArgumentOutOfRangeException(nameof(texture), "Texture format is not supported yet.");
+                    throw new System.ArgumentOutOfRangeException(nameof(format), "Texture format is not supported yet.");
             }
 #endif
         }
