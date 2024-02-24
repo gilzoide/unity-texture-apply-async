@@ -1,0 +1,12 @@
+{
+  "name": "com.gilzoide.texture-async-apply",
+  "displayName": "Texture Async Apply",
+  "version": "1.0.0-preview1",
+  "description": "Apply pixel data changes to Texture2D in CPU using NativeArray and CommandBuffers.",
+  "homepage": "https://github.com/gilzoide/unity-texture-async-apply",
+  "license": "Unlicense",
+  "author": {
+    "name": "Gil Barbosa Reis"
+  },
+  "unity": "2018.3"
+}
