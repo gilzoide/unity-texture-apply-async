@@ -23,7 +23,14 @@ namespace Gilzoide.TextureAsyncApply
             }
 
             Texture = texture;
-            Buffer = new NativeArray<byte>(texture.GetPixelData<byte>(0), allocator);
+            if (texture.isReadable)
+            {
+                Buffer = new NativeArray<byte>(texture.GetPixelData<byte>(0), allocator);
+            }
+            else
+            {
+                Buffer = new NativeArray<byte>(texture.GetSizeInBytes(), allocator);
+            }
             unsafe
             {
                 Id = NativeBridge.CreateHandle((IntPtr) Buffer.GetUnsafePtr());
