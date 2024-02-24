@@ -8,11 +8,12 @@ namespace Gilzoide.TextureAsyncApply.Internal
     public static class TextureAsyncApplier
     {
         private static List<TextureAsyncApplyHandle> _textureApplyHandles = new List<TextureAsyncApplyHandle>();
-        private static Camera _camera;
         private static CommandBuffer _commandBuffer = new CommandBuffer
         {
             name = nameof(TextureAsyncApplier),
         };
+        private static Camera _registeredCamera;
+        private static int _lastProcessedFrame;
 
         public static void Register(TextureAsyncApplyHandle handle)
         {
@@ -64,9 +65,9 @@ namespace Gilzoide.TextureAsyncApply.Internal
 
         private static void UnregisterOnPreRender()
         {
-            if (_camera && _commandBuffer != null)
+            if (_registeredCamera && _commandBuffer != null)
             {
-                _camera.RemoveCommandBuffer(_camera.GetFirstCameraEvent(), _commandBuffer);
+                _registeredCamera.RemoveCommandBuffer(_registeredCamera.GetFirstCameraEvent(), _commandBuffer);
             }
             Camera.onPreRender -= OnPreRender;
         }
@@ -82,20 +83,24 @@ namespace Gilzoide.TextureAsyncApply.Internal
 
         private static void OnPreRender(Camera camera)
         {
-            if (_camera)
+            int currentFrame = Time.frameCount;
+            if (currentFrame == _lastProcessedFrame)
             {
-                if (_camera.isActiveAndEnabled)
-                {
-                    return;
-                }
-                else
-                {
-                    _camera.RemoveCommandBuffer(_camera.GetFirstCameraEvent(), _commandBuffer);
-                }
+                return;
+            }
+            _lastProcessedFrame = currentFrame;
+
+            if (camera == _registeredCamera)
+            {
+                return;
+            }
+            else if (_registeredCamera)
+            {
+                _registeredCamera.RemoveCommandBuffer(_registeredCamera.GetFirstCameraEvent(), _commandBuffer);
             }
 
             camera.AddCommandBuffer(camera.GetFirstCameraEvent(), _commandBuffer);
-            _camera = camera;
+            _registeredCamera = camera;
         }
 
         private static CameraEvent GetFirstCameraEvent(this Camera camera)

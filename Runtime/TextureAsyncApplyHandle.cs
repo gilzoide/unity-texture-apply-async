@@ -33,7 +33,7 @@ namespace Gilzoide.TextureAsyncApply
             }
             unsafe
             {
-                Id = NativeBridge.CreateHandle((IntPtr) Buffer.GetUnsafePtr());
+                Id = NativeBridge.RegisterHandle((IntPtr) Buffer.GetUnsafePtr());
             }
         }
 
@@ -59,7 +59,7 @@ namespace Gilzoide.TextureAsyncApply
         {
             UnregisterFromRenderLoop();
 
-            NativeBridge.DisposeHandle(Id);
+            NativeBridge.UnregisterHandle(Id);
             Id = 0;
 
             Texture = null;

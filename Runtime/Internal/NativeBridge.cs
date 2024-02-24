@@ -16,9 +16,9 @@ namespace Gilzoide.TextureAsyncApply.Internal
         public static readonly IntPtr EventHandler_ptr = GetEventHandler();
 
         [DllImport(LibraryName, EntryPoint = "TextureAsyncApply_new")]
-        public static extern uint CreateHandle(IntPtr buffer);
+        public static extern uint RegisterHandle(IntPtr buffer);
 
         [DllImport(LibraryName, EntryPoint = "TextureAsyncApply_dispose")]
-        public static extern void DisposeHandle(uint handle);
+        public static extern void UnregisterHandle(uint handle);
     }
 }
