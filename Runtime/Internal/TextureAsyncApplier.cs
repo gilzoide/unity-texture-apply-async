@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Gilzoide.TextureAsyncApply.Internal
+namespace Gilzoide.TextureApplyAsync.Internal
 {
     public static class TextureAsyncApplier
     {
-        private static List<TextureAsyncApplyHandle> _textureApplyHandles = new List<TextureAsyncApplyHandle>();
+        private static List<TextureApplyAsyncHandle> _textureApplyHandles = new List<TextureApplyAsyncHandle>();
         private static CommandBuffer _commandBuffer = new CommandBuffer
         {
             name = nameof(TextureAsyncApplier),
@@ -15,7 +15,7 @@ namespace Gilzoide.TextureAsyncApply.Internal
         private static Camera _registeredCamera;
         private static int _lastProcessedFrame;
 
-        public static void Register(TextureAsyncApplyHandle handle)
+        public static void Register(TextureApplyAsyncHandle handle)
         {
             if (handle == null)
             {
@@ -34,7 +34,7 @@ namespace Gilzoide.TextureAsyncApply.Internal
             }
         }
 
-        public static void Unregister(TextureAsyncApplyHandle handle)
+        public static void Unregister(TextureApplyAsyncHandle handle)
         {
             if (_textureApplyHandles.Remove(handle) && _textureApplyHandles.Count == 0)
             {
@@ -75,7 +75,7 @@ namespace Gilzoide.TextureAsyncApply.Internal
         private static void RebuildCommandBuffer()
         {
             _commandBuffer.Clear();
-            foreach (TextureAsyncApplyHandle handle in _textureApplyHandles)
+            foreach (TextureApplyAsyncHandle handle in _textureApplyHandles)
             {
                 handle.FillCommandBuffer(_commandBuffer);
             }
@@ -105,14 +105,17 @@ namespace Gilzoide.TextureAsyncApply.Internal
 
         private static CameraEvent GetFirstCameraEvent(this Camera camera)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             switch (camera.actualRenderingPath)
             {
+                case RenderingPath.DeferredLighting:
                 case RenderingPath.DeferredShading:
                     return CameraEvent.BeforeGBuffer;
 
                 default:
                     return CameraEvent.BeforeForwardOpaque;
             }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

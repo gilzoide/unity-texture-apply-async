@@ -1,6 +1,6 @@
 {
-    "name": "Gilzoide.TextureAsyncApply",
-    "rootNamespace": "Gilzoide.TextureAsyncApply",
+    "name": "Gilzoide.TextureApplyAsync",
+    "rootNamespace": "Gilzoide.TextureApplyAsync",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

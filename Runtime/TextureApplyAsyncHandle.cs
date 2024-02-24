@@ -1,13 +1,13 @@
 using System;
-using Gilzoide.TextureAsyncApply.Internal;
+using Gilzoide.TextureApplyAsync.Internal;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Gilzoide.TextureAsyncApply
+namespace Gilzoide.TextureApplyAsync
 {
-    public class TextureAsyncApplyHandle : IDisposable
+    public class TextureApplyAsyncHandle : IDisposable
     {
         public uint Id { get; private set; }
         public Texture2D Texture { get; private set; }
@@ -15,7 +15,7 @@ namespace Gilzoide.TextureAsyncApply
 
         public bool IsValid => Id != 0 && Texture;
 
-        public TextureAsyncApplyHandle(Texture2D texture, Allocator allocator = Allocator.Persistent)
+        public TextureApplyAsyncHandle(Texture2D texture, Allocator allocator = Allocator.Persistent)
         {
             if (texture == null)
             {
@@ -37,7 +37,7 @@ namespace Gilzoide.TextureAsyncApply
             }
         }
 
-        ~TextureAsyncApplyHandle()
+        ~TextureApplyAsyncHandle()
         {
             Dispose();
         }

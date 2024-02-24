@@ -1,4 +1,4 @@
-using Gilzoide.TextureAsyncApply;
+using Gilzoide.TextureApplyAsync;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -11,7 +11,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     [SerializeField, Min(1)] private int height = 128;
 
     private Texture2D _texture;
-    private TextureAsyncApplyHandle _asyncApplyHandle;
+    private TextureApplyAsyncHandle _asyncApplyHandle;
     private JobHandle _jobHandle;
 
     void OnEnable()
@@ -22,7 +22,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
         }
         _texture.Apply(false, true);
         rawImage.texture = _texture;
-        _asyncApplyHandle = new TextureAsyncApplyHandle(_texture);
+        _asyncApplyHandle = new TextureApplyAsyncHandle(_texture);
         _asyncApplyHandle.RegisterInRenderLoop();
     }
 

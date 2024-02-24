@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
-namespace Gilzoide.TextureAsyncApply
+namespace Gilzoide.TextureApplyAsync
 {
     public static class TextureExtensions
     {

@@ -2,7 +2,7 @@
     "name": "Gilzoide.TextureAsyncApply.PlasmaColorJob",
     "rootNamespace": "",
     "references": [
-        "Gilzoide.TextureAsyncApply",
+        "Gilzoide.TextureApplyAsync",
         "Unity.Burst"
     ],
     "includePlatforms": [],

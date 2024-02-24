@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Gilzoide.TextureAsyncApply.Internal
+namespace Gilzoide.TextureApplyAsync.Internal
 {
     internal class NativeBridge
     {
