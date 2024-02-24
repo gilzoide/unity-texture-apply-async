@@ -37,6 +37,11 @@ namespace Gilzoide.TextureAsyncApply
             }
         }
 
+        ~TextureAsyncApplyHandle()
+        {
+            Dispose();
+        }
+
         public void RegisterInRenderLoop()
         {
             TextureAsyncApplier.Register(this);
