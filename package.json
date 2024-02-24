@@ -8,5 +8,12 @@
   "author": {
     "name": "Gil Barbosa Reis"
   },
-  "unity": "2018.3"
+  "unity": "2018.3",
+  "samples": [
+    {
+        "displayName": "UI Graphic using paths",
+        "description": "Demonstrates how to update a Texture2D every frame asynchronously using the C# Job System in tandem with TextureAsyncApplyHandle.",
+        "path": "Samples~/PlasmaColorJob"
+    }
+  ]
 }

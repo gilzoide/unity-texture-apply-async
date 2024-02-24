@@ -1,0 +1,23 @@
+{
+    "name": "Gilzoide.TextureAsyncApply.PlasmaColorJob",
+    "rootNamespace": "",
+    "references": [
+        "Gilzoide.TextureAsyncApply",
+        "Unity.Burst"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.burst",
+            "expression": "",
+            "define": "HAVE_BURST"
+        }
+    ],
+    "noEngineReferences": false
+}
