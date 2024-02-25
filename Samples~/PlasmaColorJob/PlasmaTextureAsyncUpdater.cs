@@ -9,18 +9,23 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     [SerializeField] private RawImage rawImage;
     [SerializeField, Min(1)] private int width = 128;
     [SerializeField, Min(1)] private int height = 128;
+    [SerializeField] bool _updateAsync = true;
+
+    public bool UpdateAsync
+    {
+        get => _updateAsync;
+        set => _updateAsync = value;
+    }
 
     private Texture2D _texture;
     private TextureApplyAsyncHandle _textureApplyAsyncHandle;
     private JobHandle _jobHandle;
-    private static bool ShouldChangeTexture => Time.frameCount % 2 == 0;
 
     void OnEnable()
     {
         if (_texture == null)
         {
             _texture = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
-            _texture.Apply(false, true);
         }
         rawImage.texture = _texture;
         _textureApplyAsyncHandle = new TextureApplyAsyncHandle(_texture);
@@ -38,25 +43,26 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
 
     void Update()
     {
-        if (ShouldChangeTexture)
+        NativeArray<Color32> pixels = UpdateAsync ? _textureApplyAsyncHandle.GetPixelData<Color32>() : _texture.GetRawTextureData<Color32>();
+        _jobHandle = new PlasmaColorJob
         {
-            NativeArray<Color32> pixels = _textureApplyAsyncHandle.GetPixelData<Color32>();
-            _jobHandle = new PlasmaColorJob
-            {
-                Time = Time.time,
-                Width = _texture.width,
-                Height = _texture.height,
-                Pixels = pixels,
-            }.Schedule(pixels.Length, 64);
-        }
+            Time = Time.time,
+            Width = _texture.width,
+            Height = _texture.height,
+            Pixels = pixels,
+        }.Schedule(pixels.Length, 64);
     }
 
     void LateUpdate()
     {
-        if (ShouldChangeTexture)
+        _jobHandle.Complete();
+        if (UpdateAsync)
         {
-            _jobHandle.Complete();
             _textureApplyAsyncHandle.ScheduleUpdateOnce();
+        }
+        else
+        {
+            _texture.Apply();
         }
     }
 
