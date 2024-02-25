@@ -16,6 +16,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         private static Camera _registeredCamera;
         private static int _lastProcessedFrame;
         private static bool _isCommandBufferDirty;
+        private static bool _isOnPreRenderRegistered;
 
         private static int HandlesCount => _applyHandlesEveryFrame.Count + _applyHandlesThisFrame.Count;
 
@@ -52,7 +53,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
                 _applyHandlesThisFrame.Add(handle);
             }
             _isCommandBufferDirty = true;
-            if (HandlesCount == 1)
+            if (!_isOnPreRenderRegistered)
             {
                 RegisterOnPreRender();
             }
@@ -64,7 +65,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
             if (removedAnyHandles)
             {
                 _isCommandBufferDirty = true;
-                if (HandlesCount == 0)
+                if (_isOnPreRenderRegistered && HandlesCount == 0)
                 {
                     UnregisterOnPreRender();
                 }
@@ -91,6 +92,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         private static void RegisterOnPreRender()
         {
             Camera.onPreRender += CachedOnPreRender;
+            _isOnPreRenderRegistered = true;
         }
 
         private static void UnregisterOnPreRender()
@@ -100,6 +102,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
                 _registeredCamera.RemoveCommandBuffer(_registeredCamera.GetFirstCameraEvent(), _commandBuffer);
             }
             Camera.onPreRender -= CachedOnPreRender;
+            _isOnPreRenderRegistered = false;
         }
 
         private static void RebuildCommandBuffer()
