@@ -13,45 +13,51 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     private Texture2D _texture;
     private TextureApplyAsyncHandle _asyncApplyHandle;
     private JobHandle _jobHandle;
+    private static bool ShouldChangeTexture => Time.frameCount % 2 == 0;
 
     void OnEnable()
     {
         if (_texture == null)
         {
             _texture = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
+            _texture.Apply(false, true);
         }
-        _texture.Apply(false, true);
         rawImage.texture = _texture;
         _asyncApplyHandle = new TextureApplyAsyncHandle(_texture);
-        _asyncApplyHandle.RegisterInRenderLoop();
     }
 
     void OnDisable()
     {
-        _asyncApplyHandle.UnregisterFromRenderLoop();
+        _asyncApplyHandle?.Dispose();
     }
 
     void OnDestroy()
     {
-        _asyncApplyHandle?.Dispose();
         Destroy(_texture);
     }
 
     void Update()
     {
-        NativeArray<Color32> pixels = _asyncApplyHandle.GetPixelData<Color32>();
-        _jobHandle = new PlasmaColorJob
+        if (ShouldChangeTexture)
         {
-            Time = Time.time,
-            Width = _texture.width,
-            Height = _texture.height,
-            Pixels = pixels,
-        }.Schedule(pixels.Length, 64);
+            NativeArray<Color32> pixels = _asyncApplyHandle.GetPixelData<Color32>();
+            _jobHandle = new PlasmaColorJob
+            {
+                Time = Time.time,
+                Width = _texture.width,
+                Height = _texture.height,
+                Pixels = pixels,
+            }.Schedule(pixels.Length, 64);
+        }
     }
 
     void LateUpdate()
     {
-        _jobHandle.Complete();
+        if (ShouldChangeTexture)
+        {
+            _jobHandle.Complete();
+            _asyncApplyHandle.RegisterUpdateThisFrame();
+        }
     }
 
 #if HAVE_BURST

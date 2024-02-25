@@ -51,12 +51,17 @@ namespace Gilzoide.TextureApplyAsync
             return Buffer.Reinterpret<TPixel>(sizeof(byte));
         }
 
-        public void RegisterInRenderLoop()
+        public void RegisterUpdateEveryFrame()
         {
-            TextureAsyncApplier.Register(this);
+            TextureAsyncApplier.RegisterUpdateEveryFrame(this);
         }
 
-        public void UnregisterFromRenderLoop()
+        public void RegisterUpdateThisFrame()
+        {
+            TextureAsyncApplier.RegisterUpdateThisFrame(this);
+        }
+
+        public void UnregisterUpdates()
         {
             TextureAsyncApplier.Unregister(this);
         }
@@ -71,7 +76,7 @@ namespace Gilzoide.TextureApplyAsync
 
         public void Dispose()
         {
-            UnregisterFromRenderLoop();
+            UnregisterUpdates();
 
             NativeBridge.UnregisterHandle(Id);
             Id = 0;
