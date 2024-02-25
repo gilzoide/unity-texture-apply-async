@@ -11,7 +11,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     [SerializeField, Min(1)] private int height = 128;
 
     private Texture2D _texture;
-    private TextureApplyAsyncHandle _asyncApplyHandle;
+    private TextureApplyAsyncHandle _textureApplyAsyncHandle;
     private JobHandle _jobHandle;
     private static bool ShouldChangeTexture => Time.frameCount % 2 == 0;
 
@@ -23,12 +23,12 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
             _texture.Apply(false, true);
         }
         rawImage.texture = _texture;
-        _asyncApplyHandle = new TextureApplyAsyncHandle(_texture);
+        _textureApplyAsyncHandle = new TextureApplyAsyncHandle(_texture);
     }
 
     void OnDisable()
     {
-        _asyncApplyHandle?.Dispose();
+        _textureApplyAsyncHandle?.Dispose();
     }
 
     void OnDestroy()
@@ -40,7 +40,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     {
         if (ShouldChangeTexture)
         {
-            NativeArray<Color32> pixels = _asyncApplyHandle.GetPixelData<Color32>();
+            NativeArray<Color32> pixels = _textureApplyAsyncHandle.GetPixelData<Color32>();
             _jobHandle = new PlasmaColorJob
             {
                 Time = Time.time,
@@ -56,7 +56,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
         if (ShouldChangeTexture)
         {
             _jobHandle.Complete();
-            _asyncApplyHandle.RegisterUpdateThisFrame();
+            _textureApplyAsyncHandle.ScheduleUpdateOnce();
         }
     }
 

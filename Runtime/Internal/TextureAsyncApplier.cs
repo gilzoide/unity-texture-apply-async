@@ -19,12 +19,12 @@ namespace Gilzoide.TextureApplyAsync.Internal
 
         private static int HandlesCount => _applyHandlesEveryFrame.Count + _applyHandlesThisFrame.Count;
 
-        public static void RegisterUpdateEveryFrame(TextureApplyAsyncHandle handle)
+        public static void ScheduleUpdateEveryFrame(TextureApplyAsyncHandle handle)
         {
             Register(handle, true);
         }
 
-        public static void RegisterUpdateThisFrame(TextureApplyAsyncHandle handle)
+        public static void ScheduleUpdateOnce(TextureApplyAsyncHandle handle)
         {
             Register(handle, false);
         }
