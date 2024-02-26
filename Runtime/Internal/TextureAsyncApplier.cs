@@ -9,10 +9,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
     {
         private static List<TextureApplyAsyncHandle> _applyHandlesEveryFrame = new List<TextureApplyAsyncHandle>();
         private static List<TextureApplyAsyncHandle> _applyHandlesThisFrame = new List<TextureApplyAsyncHandle>();
-        private static CommandBuffer _commandBuffer = new CommandBuffer
-        {
-            name = nameof(TextureAsyncApplier),
-        };
+        private static CommandBuffer _commandBuffer;
         private static Camera _registeredCamera;
         private static int _lastProcessedFrame;
         private static bool _isCommandBufferDirty;
@@ -72,9 +69,13 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
         }
 
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeOnLoad()
         {
+            _commandBuffer = new CommandBuffer
+            {
+                name = nameof(TextureAsyncApplier),
+            };
             Application.quitting += Dispose;
         }
 
