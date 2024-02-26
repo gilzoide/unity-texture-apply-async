@@ -5,7 +5,7 @@ AR ?= ar
 
 ANDROID_NDK_ROOT ?=
 
-LINKFLAGS_SHARED += -shared
+LINKFLAGS += -shared
 CXXFLAGS += -std=c++11
 ifeq ($(DEBUG),1)
 	CXXFLAGS += -O0 -g
@@ -25,16 +25,16 @@ $(BUILD_DIRS):
 	mkdir -p $@
 
 %/texture_async_apply.dll: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.so: CXXFLAGS += -fPIC
 %/libtexture_async_apply.so: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.dylib: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/texture_async_apply.o: src~/texture_async_apply.cpp | %
