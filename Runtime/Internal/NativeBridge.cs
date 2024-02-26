@@ -5,7 +5,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
 {
     internal class NativeBridge
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if !UNITY_EDITOR && (UNITY_WEBGL || UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
         internal const string LibraryName = "__Internal";
 #else
         internal const string LibraryName = "texture_async_apply";

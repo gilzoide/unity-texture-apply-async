@@ -1,10 +1,11 @@
 STRIP ?= strip
 EMCXX ?= em++
 SED ?= sed
+AR ?= ar
 
 ANDROID_NDK_ROOT ?=
 
-LINKFLAGS += -shared
+LINKFLAGS_SHARED += -shared
 CXXFLAGS += -std=c++11
 ifeq ($(DEBUG),1)
 	CXXFLAGS += -O0 -g
@@ -24,16 +25,23 @@ $(BUILD_DIRS):
 	mkdir -p $@
 
 %/texture_async_apply.dll: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.so: CXXFLAGS += -fPIC
 %/libtexture_async_apply.so: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.dylib: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS_SHARED) $(LINKFLAGS)
+	$(STRIP) -x $@
+
+%/texture_async_apply.o: src~/texture_async_apply.cpp | %
+	$(CXX) -c -o $@ $^ $(CXXFLAGS)
+
+%/libtexture_async_apply.a: %/texture_async_apply.o | %
+	$(AR) r $@ $<
 	$(STRIP) -x $@
 
 # Linux
@@ -43,13 +51,13 @@ build/Linux/x86/libtexture_async_apply.so: CXXFLAGS += -m32
 build/macOS/libtexture_async_apply.dylib: CXXFLAGS += -arch x86_64 -arch arm64
 
 # iOS
-build/iOS/libtexture_async_apply.dylib: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk iphoneos)
+build/iOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk iphoneos)
 
 # tvOS
-build/tvOS/libtexture_async_apply.dylib: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk appletvos)
+build/tvOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk appletvos)
 
 # visionOS
-build/visionOS/libtexture_async_apply.dylib: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk xros)
+build/visionOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk xros)
 
 # Android
 build/Android/%/libtexture_async_apply.so: CXXFLAGS += -static-libstdc++
@@ -84,9 +92,9 @@ linux-x86_64: build/Linux/x86_64/libtexture_async_apply.so
 all-linux: linux-x86_64
 
 macos-universal: build/macOS/libtexture_async_apply.dylib
-ios-arm64: build/iOS/libtexture_async_apply.dylib
-tvos-arm64: build/tvOS/libtexture_async_apply.dylib
-visionos-arm64: build/visionOS/libtexture_async_apply.dylib
+ios-arm64: build/iOS/libtexture_async_apply.a
+tvos-arm64: build/tvOS/libtexture_async_apply.a
+visionos-arm64: build/visionOS/libtexture_async_apply.a
 all-apple: macos-universal ios-arm64 tvos-arm64 visionos-arm64
 
 android-arm64: build/Android/arm64/libtexture_async_apply.so
