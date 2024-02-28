@@ -43,7 +43,7 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
 
     void Update()
     {
-        NativeArray<Color32> pixels = UpdateAsync ? _textureApplyAsyncHandle.GetPixelData<Color32>() : _texture.GetRawTextureData<Color32>();
+        NativeArray<Color32> pixels = _texture.GetPixelData<Color32>(0);
         _jobHandle = new PlasmaColorJob
         {
             Time = Time.time,
