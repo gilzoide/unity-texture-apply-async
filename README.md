@@ -1,4 +1,6 @@
 # Texture Apply Async
+[![openupm](https://img.shields.io/npm/v/com.gilzoide.texture-apply-async?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.gilzoide.texture-apply-async/)
+
 Alternative to [Texture2D.Apply()](https://docs.unity3d.com/ScriptReference/Texture2D.Apply.html) that doesn't require synchronizing with the render thread, avoiding stalls in the main thread.
 
 
@@ -11,6 +13,19 @@ Alternative to [Texture2D.Apply()](https://docs.unity3d.com/ScriptReference/Text
 
 ## Caveats
 - You should not update the texture's data while the camera is rendering, or else garbage data could be applied to the texture.
+
+
+## How to install
+Either:
+- Use the [openupm registry](https://openupm.com/) and install this package using the [openupm-cli](https://github.com/openupm/openupm-cli):
+  ```
+  openupm add com.gilzoide.texture-apply-async
+  ```
+- Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html) with the following URL:
+  ```
+  https://github.com/gilzoide/unity-texture-apply-async.git#1.0.0-preview1
+  ```
+- Clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
 
 
 ## Samples
