@@ -1,0 +1,16 @@
+{
+    "name": "Gilzoide.TextureAsyncApply.RandomColors",
+    "rootNamespace": "",
+    "references": [
+        "Gilzoide.TextureApplyAsync"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
