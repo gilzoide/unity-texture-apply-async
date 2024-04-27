@@ -25,20 +25,20 @@ $(BUILD_DIRS):
 	mkdir -p $@
 
 %/texture_async_apply.dll: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.so: CXXFLAGS += -fPIC
 %/libtexture_async_apply.so: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.dylib: src~/texture_async_apply.cpp | %
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LINKFLAGS)
+	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/texture_async_apply.o: src~/texture_async_apply.cpp | %
-	$(CXX) -c -o $@ $^ $(CXXFLAGS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 %/libtexture_async_apply.a: %/texture_async_apply.o | %
 	$(AR) r $@ $<
@@ -60,13 +60,22 @@ build/tvOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell x
 build/visionOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk xros)
 
 # Android
+check-ndk-root:
+ifndef ANDROID_NDK_ROOT
+	$(error ANDROID_NDK_ROOT must be set for Android builds!)
+endif
+
 build/Android/%/libtexture_async_apply.so: CXXFLAGS += -static-libstdc++
 build/Android/%/libtexture_async_apply.so: STRIP = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/llvm-strip)
 
 build/Android/arm64/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/aarch64-linux-android21-clang++)
-build/Android/arm32/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/armv7a-linux-androideabi19-clang++)
+build/Android/arm64/libtexture_async_apply.so: check-ndk-root
+build/Android/arm32/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/armv7a-linux-androideabi21-clang++)
+build/Android/arm32/libtexture_async_apply.so: check-ndk-root
 build/Android/x86_64/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/x86_64-linux-android21-clang++)
-build/Android/x86/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/i686-linux-android19-clang++)
+build/Android/x86_64/libtexture_async_apply.so: check-ndk-root
+build/Android/x86/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/*/bin/i686-linux-android21-clang++)
+build/Android/x86/libtexture_async_apply.so: check-ndk-root
 
 # WebGL
 build/WebGL/texture_async_apply.bc: src~/texture_async_apply.cpp | build/WebGL
