@@ -8,7 +8,7 @@ Alternative to [Texture2D.Apply()](https://docs.unity3d.com/ScriptReference/Text
 - Asynchronous texture data update in CPU in the render thread, avoiding stalls in the main thread
 - Updates run before the first camera renders, guaranteeing the texture is applied before appearing in the screen
 - Supports registering for updates every frame or for a single frame
-- Prebuilt for Windows, macOS, iOS, tvOS, visionOS, Android and WebGL
+- Prebuilt for Windows, Linux, macOS, iOS, tvOS, visionOS, Android and WebGL
 
 
 ## Caveats
@@ -23,7 +23,7 @@ Either:
   ```
 - Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html) with the following URL:
   ```
-  https://github.com/gilzoide/unity-texture-apply-async.git#1.0.0-preview1
+  https://github.com/gilzoide/unity-texture-apply-async.git#1.0.0-preview2
   ```
 - Clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
 
