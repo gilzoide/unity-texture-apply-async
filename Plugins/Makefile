@@ -105,3 +105,17 @@ all-android: android-arm64 android-arm32 android-x86_64 android-x86
 
 webgl: build/WebGL/texture_async_apply.bc
 all-webgl: webgl
+
+# Dockerized builds
+docker-all-android:
+	docker build -f src~/Dockerfile.build.android -t gilzoide-texture-async-apply-build-android:latest .
+	docker run --rm -v "$(CURDIR)":/src -w /src --platform=linux/amd64 gilzoide-texture-async-apply-build-android:latest make all-android
+docker-all-linux:
+	docker build -f src~/Dockerfile.build.linux -t gilzoide-texture-async-apply-build-linux:latest .
+	docker run --rm -v "$(CURDIR)":/src -w /src --platform=linux/amd64 gilzoide-texture-async-apply-build-linux:latest make all-linux
+docker-all-webgl:
+	docker build -f src~/Dockerfile.build.webgl -t gilzoide-texture-async-apply-build-webgl:latest .
+	docker run --rm -v "$(CURDIR)":/src -w /src gilzoide-texture-async-apply-build-webgl:latest make all-webgl
+docker-all-windows:
+	docker build -f src~/Dockerfile.build.windows -t gilzoide-texture-async-apply-build-windows:latest .
+	docker run --rm -v "$(CURDIR)":/src -w /src gilzoide-texture-async-apply-build-windows:latest make all-windows-mingw
