@@ -8,7 +8,8 @@ Alternative to [Texture2D.Apply()](https://docs.unity3d.com/ScriptReference/Text
 - Asynchronous texture data update in CPU in the render thread, avoiding stalls in the main thread
 - Updates run before the first camera renders, guaranteeing the texture is applied before appearing in the screen
 - Supports registering for updates every frame or for a single frame
-- Prebuilt for Windows, Linux, macOS, iOS, tvOS, visionOS, Android and WebGL
+- Prebuilt for Windows, Linux, macOS and Android
+- Built from source in iOS, tvOS, visionOS and WebGL projects
 
 
 ## Caveats
