@@ -24,20 +24,20 @@ BUILD_DIRS = \
 $(BUILD_DIRS):
 	mkdir -p $@
 
-%/texture_async_apply.dll: src~/texture_async_apply.cpp | %
+%/texture_async_apply.dll: src/texture_async_apply.cpp | %
 	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
 %/libtexture_async_apply.so: CXXFLAGS += -fPIC
-%/libtexture_async_apply.so: src~/texture_async_apply.cpp | %
+%/libtexture_async_apply.so: src/texture_async_apply.cpp | %
 	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
-%/libtexture_async_apply.dylib: src~/texture_async_apply.cpp | %
+%/libtexture_async_apply.dylib: src/texture_async_apply.cpp | %
 	$(CXX) -o $@ $< $(CXXFLAGS) $(LINKFLAGS)
 	$(STRIP) -x $@
 
-%/texture_async_apply.o: src~/texture_async_apply.cpp | %
+%/texture_async_apply.o: src/texture_async_apply.cpp | %
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 %/libtexture_async_apply.a: %/texture_async_apply.o | %
@@ -49,15 +49,6 @@ build/Linux/x86/libtexture_async_apply.so: CXXFLAGS += -m32
 
 # macOS
 build/macOS/libtexture_async_apply.dylib: CXXFLAGS += -arch x86_64 -arch arm64
-
-# iOS
-build/iOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk iphoneos)
-
-# tvOS
-build/tvOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk appletvos)
-
-# visionOS
-build/visionOS/libtexture_async_apply.a: CXXFLAGS += -arch arm64 -isysroot $(shell xcrun --show-sdk-path --sdk xros)
 
 # Android
 check-ndk-root:
@@ -78,7 +69,7 @@ build/Android/x86/libtexture_async_apply.so: CXX = $(wildcard $(ANDROID_NDK_ROOT
 build/Android/x86/libtexture_async_apply.so: check-ndk-root
 
 # WebGL
-build/WebGL/texture_async_apply.bc: src~/texture_async_apply.cpp | build/WebGL
+build/WebGL/texture_async_apply.bc: src/texture_async_apply.cpp | build/WebGL
 	$(EMCXX) -o $@ -c $< $(CXXFLAGS) -emit-llvm
 
 # Targets
@@ -101,10 +92,7 @@ linux-x86_64: build/Linux/x86_64/libtexture_async_apply.so
 all-linux: linux-x86_64
 
 macos-universal: build/macOS/libtexture_async_apply.dylib
-ios-arm64: build/iOS/libtexture_async_apply.a
-tvos-arm64: build/tvOS/libtexture_async_apply.a
-visionos-arm64: build/visionOS/libtexture_async_apply.a
-all-apple: macos-universal ios-arm64 tvos-arm64 visionos-arm64
+all-apple: macos-universal
 
 android-arm64: build/Android/arm64/libtexture_async_apply.so
 android-arm32: build/Android/arm32/libtexture_async_apply.so
@@ -117,14 +105,14 @@ all-webgl: webgl
 
 # Dockerized builds
 docker-all-android:
-	docker build -f src~/Dockerfile.build.android -t gilzoide-texture-async-apply-build-android:latest .
+	docker build -f tools~/Dockerfile.build.android -t gilzoide-texture-async-apply-build-android:latest .
 	docker run --rm -v "$(CURDIR)":/src -w /src --platform=linux/amd64 gilzoide-texture-async-apply-build-android:latest make all-android
 docker-all-linux:
-	docker build -f src~/Dockerfile.build.linux -t gilzoide-texture-async-apply-build-linux:latest .
+	docker build -f tools~/Dockerfile.build.linux -t gilzoide-texture-async-apply-build-linux:latest .
 	docker run --rm -v "$(CURDIR)":/src -w /src --platform=linux/amd64 gilzoide-texture-async-apply-build-linux:latest make all-linux
 docker-all-webgl:
-	docker build -f src~/Dockerfile.build.webgl -t gilzoide-texture-async-apply-build-webgl:latest .
+	docker build -f tools~/Dockerfile.build.webgl -t gilzoide-texture-async-apply-build-webgl:latest .
 	docker run --rm -v "$(CURDIR)":/src -w /src gilzoide-texture-async-apply-build-webgl:latest make all-webgl
 docker-all-windows:
-	docker build -f src~/Dockerfile.build.windows -t gilzoide-texture-async-apply-build-windows:latest .
+	docker build -f tools~/Dockerfile.build.windows -t gilzoide-texture-async-apply-build-windows:latest .
 	docker run --rm -v "$(CURDIR)":/src -w /src gilzoide-texture-async-apply-build-windows:latest make all-windows-mingw
