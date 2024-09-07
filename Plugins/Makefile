@@ -88,12 +88,12 @@ all-windows: windows-x86_64 windows-x86
 
 windows-mingw-x86_64: CXX = x86_64-w64-mingw32-c++
 windows-mingw-x86_64: STRIP = x86_64-w64-mingw32-strip
-windows-mingw-x86_64: LINKFLAGS += -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+windows-mingw-x86_64: LINKFLAGS += -static-libgcc -static-libstdc++ -static
 windows-mingw-x86_64: build/Windows/x86_64/texture_async_apply.dll
 
 windows-mingw-x86: CXX = i686-w64-mingw32-c++
 windows-mingw-x86: STRIP = i686-w64-mingw32-strip
-windows-mingw-x86: LINKFLAGS += -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+windows-mingw-x86: LINKFLAGS += -static-libgcc -static-libstdc++ -static
 windows-mingw-x86: build/Windows/x86/texture_async_apply.dll
 all-windows-mingw: windows-mingw-x86_64 windows-mingw-x86
 
