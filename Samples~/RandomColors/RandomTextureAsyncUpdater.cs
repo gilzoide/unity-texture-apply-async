@@ -33,12 +33,14 @@ public class RandomTextureAsyncUpdater : MonoBehaviour
             }
         }
 
-        //
+        // 4. If you want to update your texture only once,
+        // schedule a one-shot update.
         _textureApplyAsyncHandle.ScheduleUpdateOnce();
     }
 
     void OnDestroy()
     {
+        // 5. Dispose of the `TextureApplyAsyncHandle` when not needed anymore
         _textureApplyAsyncHandle.Dispose();
         Destroy(_texture);
     }
