@@ -16,6 +16,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         private static bool _isOnPreRenderRegistered;
 
         private static int HandlesCount => _applyHandlesEveryFrame.Count + _applyHandlesThisFrame.Count;
+        private static bool IsUsingScriptableRenderPipeline => GraphicsSettings.currentRenderPipeline != null;
 
         public static void ScheduleUpdateEveryFrame(TextureApplyAsyncHandle handle)
         {
@@ -92,17 +93,31 @@ namespace Gilzoide.TextureApplyAsync.Internal
 
         private static void RegisterOnPreRender()
         {
-            Camera.onPreRender += CachedOnPreRender;
+            if (IsUsingScriptableRenderPipeline)
+            {
+                RenderPipelineManager.beginContextRendering += CachedOnBeginContextRendering;
+            }
+            else
+            {
+                Camera.onPreRender += CachedOnPreRender;
+            }
             _isOnPreRenderRegistered = true;
         }
 
         private static void UnregisterOnPreRender()
         {
+            if (IsUsingScriptableRenderPipeline)
+            {
+                RenderPipelineManager.beginContextRendering -= CachedOnBeginContextRendering;
+            }
+            else
+            {
+                Camera.onPreRender -= CachedOnPreRender;
+            }
             if (_registeredCamera && _commandBuffer != null)
             {
                 _registeredCamera.RemoveCommandBuffer(_registeredCamera.GetFirstCameraEvent(), _commandBuffer);
             }
-            Camera.onPreRender -= CachedOnPreRender;
             _isOnPreRenderRegistered = false;
         }
 
@@ -119,6 +134,8 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
             _isCommandBufferDirty = false;
         }
+
+        #region Builtin Render Pipeline
 
         private static readonly Camera.CameraCallback CachedOnPreRender = OnPreRender;
         private static void OnPreRender(Camera camera)
@@ -175,5 +192,32 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
+
+        #endregion // Builtin Render Pipeline
+
+        #region Scriptable Render Pipeline
+
+        private static readonly Action<ScriptableRenderContext, List<Camera>> CachedOnBeginContextRendering = OnBeginContextRendering;
+        private static void OnBeginContextRendering(ScriptableRenderContext context, List<Camera> cameras)
+        {
+            if (HandlesCount == 0)
+            {
+                UnregisterOnPreRender();
+                return;
+            }
+
+            if (_isCommandBufferDirty)
+            {
+                RebuildCommandBuffer();
+            }
+            if (_applyHandlesThisFrame.Count > 0)
+            {
+                _applyHandlesThisFrame.Clear();
+                _isCommandBufferDirty = true;
+            }
+            context.ExecuteCommandBuffer(_commandBuffer);
+        }
+
+        #endregion // Scriptable Render Pipeline
     }
 }
