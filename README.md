@@ -6,14 +6,17 @@ Alternative to [Texture2D.Apply()](https://docs.unity3d.com/ScriptReference/Text
 
 ## Features
 - Asynchronous texture data update in CPU in the render thread, avoiding stalls in the main thread
-- Updates run before the first camera renders, guaranteeing the texture is applied before appearing in the screen
+- Supports Unity's Built-in Render Pipeline as well as Scriptable Render Pipelines (e.g: URP and HDRP).
+- To guarante the texture is applied before appearing in the screen:
+  + In BRP, updates are scheduled in the first Camera's `Camera.onPreRender` event
+  + In SRP, updates are scheduled in `RenderPipelineManager.beginContextRendering` event
 - Supports registering for updates every frame or for a single frame
 - Prebuilt for Windows, Linux, macOS and Android
 - Built from source in iOS, tvOS, visionOS and WebGL projects
 
 
 ## Caveats
-- You should not update the texture's data while the camera is rendering, or else garbage data could be applied to the texture.
+- You should not update the texture's data while the camera/render pipeline is rendering, or else garbage data could be applied to the texture.
 
 
 ## How to install
