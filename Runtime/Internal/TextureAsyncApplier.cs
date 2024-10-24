@@ -1,3 +1,6 @@
+#if UNITY_2021_1_OR_NEWER
+    #define HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
+#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +19,11 @@ namespace Gilzoide.TextureApplyAsync.Internal
         private static bool _isOnPreRenderRegistered;
 
         private static int HandlesCount => _applyHandlesEveryFrame.Count + _applyHandlesThisFrame.Count;
+#if UNITY_2019_3_OR_NEWER
+        private static bool IsUsingScriptableRenderPipeline => GraphicsSettings.currentRenderPipeline != null;
+#else
+        private static bool IsUsingScriptableRenderPipeline => GraphicsSettings.renderPipelineAsset != null;
+#endif
 
         public static void ScheduleUpdateEveryFrame(TextureApplyAsyncHandle handle)
         {
@@ -92,17 +100,39 @@ namespace Gilzoide.TextureApplyAsync.Internal
 
         private static void RegisterOnPreRender()
         {
-            Camera.onPreRender += CachedOnPreRender;
+            if (IsUsingScriptableRenderPipeline)
+            {
+#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
+                RenderPipelineManager.beginContextRendering += CachedOnBeginContextRendering;
+#else
+                RenderPipelineManager.beginFrameRendering += CachedOnBeginFrameRendering;
+#endif
+            }
+            else
+            {
+                Camera.onPreRender += CachedOnPreRender;
+            }
             _isOnPreRenderRegistered = true;
         }
 
         private static void UnregisterOnPreRender()
         {
+            if (IsUsingScriptableRenderPipeline)
+            {
+#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
+                RenderPipelineManager.beginContextRendering -= CachedOnBeginContextRendering;
+#else
+                RenderPipelineManager.beginFrameRendering -= CachedOnBeginFrameRendering;
+#endif
+            }
+            else
+            {
+                Camera.onPreRender -= CachedOnPreRender;
+            }
             if (_registeredCamera && _commandBuffer != null)
             {
                 _registeredCamera.RemoveCommandBuffer(_registeredCamera.GetFirstCameraEvent(), _commandBuffer);
             }
-            Camera.onPreRender -= CachedOnPreRender;
             _isOnPreRenderRegistered = false;
         }
 
@@ -119,6 +149,8 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
             _isCommandBufferDirty = false;
         }
+
+        #region Builtin Render Pipeline
 
         private static readonly Camera.CameraCallback CachedOnPreRender = OnPreRender;
         private static void OnPreRender(Camera camera)
@@ -175,5 +207,37 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
+
+        #endregion // Builtin Render Pipeline
+
+        #region Scriptable Render Pipeline
+
+#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
+        private static readonly Action<ScriptableRenderContext, List<Camera>> CachedOnBeginContextRendering = OnBeginContextRendering;
+        private static void OnBeginContextRendering(ScriptableRenderContext context, List<Camera> cameras)
+#else
+        private static readonly Action<ScriptableRenderContext, Camera[]> CachedOnBeginFrameRendering = OnBeginFrameRendering;
+        private static void OnBeginFrameRendering(ScriptableRenderContext context, Camera[] cameras)
+#endif
+        {
+            if (HandlesCount == 0)
+            {
+                UnregisterOnPreRender();
+                return;
+            }
+
+            if (_isCommandBufferDirty)
+            {
+                RebuildCommandBuffer();
+            }
+            if (_applyHandlesThisFrame.Count > 0)
+            {
+                _applyHandlesThisFrame.Clear();
+                _isCommandBufferDirty = true;
+            }
+            context.ExecuteCommandBuffer(_commandBuffer);
+        }
+
+        #endregion // Scriptable Render Pipeline
     }
 }
