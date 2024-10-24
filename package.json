@@ -1,7 +1,7 @@
 {
   "name": "com.gilzoide.texture-apply-async",
   "displayName": "Texture Apply Async",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This package provides an alternative to Texture2D.Apply() that doesn't require synchronizing with the render thread, avoiding stalls in the main thread.\n\nTexture updates run in the render thread using CommandBuffers. Texture updates run before the first command of the first Camera by default, but you can use your own CommandBuffers if necessary.",
   "homepage": "https://github.com/gilzoide/unity-texture-apply-async",
   "license": "Unlicense",
