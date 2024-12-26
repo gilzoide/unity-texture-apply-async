@@ -65,7 +65,14 @@ textureApplyAsyncHandle.ScheduleUpdateOnce();
 // Works for both one-shot and every frame updates.
 textureApplyAsyncHandle.CancelUpdates();
 
-// 6. Dispose of the `TextureApplyAsyncHandle` when not needed
+// 6. If you ever Reinitialize your Texture, make
+// sure to Reinitialize your TextureApplyAsyncHandle
+// or your app may crash!!!
+myTexture.Reinitialize(width, height);
+myTexture.Apply();
+textureApplyAsyncHandle.Reinitialize();
+
+// 7. Dispose of the `TextureApplyAsyncHandle` when not needed
 // anymore, e.g. inside a component's `OnDestroy`.
 textureApplyAsyncHandle.Dispose();
 ```
