@@ -70,6 +70,19 @@ namespace Gilzoide.TextureApplyAsync.Internal
             }
         }
 
+        public static bool IsRegistered(TextureApplyAsyncHandle handle)
+        {
+            return _applyHandlesEveryFrame.Contains(handle) || _applyHandlesThisFrame.Contains(handle);
+        }
+
+        internal static void MarkDirty(TextureApplyAsyncHandle handle)
+        {
+            if (!_isCommandBufferDirty)
+            {
+                _isCommandBufferDirty = IsRegistered(handle);
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeOnLoad()
         {
