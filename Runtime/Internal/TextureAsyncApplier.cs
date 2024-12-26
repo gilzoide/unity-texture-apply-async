@@ -1,6 +1,3 @@
-#if UNITY_2021_1_OR_NEWER
-    #define HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
-#endif
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +7,8 @@ namespace Gilzoide.TextureApplyAsync.Internal
 {
     public static class TextureAsyncApplier
     {
-        private static List<TextureApplyAsyncHandle> _applyHandlesEveryFrame = new List<TextureApplyAsyncHandle>();
-        private static List<TextureApplyAsyncHandle> _applyHandlesThisFrame = new List<TextureApplyAsyncHandle>();
+        private static readonly List<TextureApplyAsyncHandle> _applyHandlesEveryFrame = new();
+        private static readonly List<TextureApplyAsyncHandle> _applyHandlesThisFrame = new();
         private static CommandBuffer _commandBuffer;
         private static Camera _registeredCamera;
         private static int _lastProcessedFrame;
@@ -19,11 +16,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         private static bool _isOnPreRenderRegistered;
 
         private static int HandlesCount => _applyHandlesEveryFrame.Count + _applyHandlesThisFrame.Count;
-#if UNITY_2019_3_OR_NEWER
         private static bool IsUsingScriptableRenderPipeline => GraphicsSettings.currentRenderPipeline != null;
-#else
-        private static bool IsUsingScriptableRenderPipeline => GraphicsSettings.renderPipelineAsset != null;
-#endif
 
         public static void ScheduleUpdateEveryFrame(TextureApplyAsyncHandle handle)
         {
@@ -102,11 +95,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         {
             if (IsUsingScriptableRenderPipeline)
             {
-#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
                 RenderPipelineManager.beginContextRendering += CachedOnBeginContextRendering;
-#else
-                RenderPipelineManager.beginFrameRendering += CachedOnBeginFrameRendering;
-#endif
             }
             else
             {
@@ -119,11 +108,7 @@ namespace Gilzoide.TextureApplyAsync.Internal
         {
             if (IsUsingScriptableRenderPipeline)
             {
-#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
                 RenderPipelineManager.beginContextRendering -= CachedOnBeginContextRendering;
-#else
-                RenderPipelineManager.beginFrameRendering -= CachedOnBeginFrameRendering;
-#endif
             }
             else
             {
@@ -195,30 +180,25 @@ namespace Gilzoide.TextureApplyAsync.Internal
 
         private static CameraEvent GetFirstCameraEvent(this Camera camera)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             switch (camera.actualRenderingPath)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 case RenderingPath.DeferredLighting:
+#pragma warning restore CS0618 // Type or member is obsolete
                 case RenderingPath.DeferredShading:
                     return CameraEvent.BeforeGBuffer;
 
                 default:
                     return CameraEvent.BeforeForwardOpaque;
             }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         #endregion // Builtin Render Pipeline
 
         #region Scriptable Render Pipeline
 
-#if HAVE_RENDER_PIPELINE_MANAGER_BEGIN_CONTEXT_RENDERING
         private static readonly Action<ScriptableRenderContext, List<Camera>> CachedOnBeginContextRendering = OnBeginContextRendering;
         private static void OnBeginContextRendering(ScriptableRenderContext context, List<Camera> cameras)
-#else
-        private static readonly Action<ScriptableRenderContext, Camera[]> CachedOnBeginFrameRendering = OnBeginFrameRendering;
-        private static void OnBeginFrameRendering(ScriptableRenderContext context, Camera[] cameras)
-#endif
         {
             if (HandlesCount == 0)
             {
