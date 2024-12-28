@@ -15,16 +15,8 @@ namespace Gilzoide.TextureApplyAsync
 
         public TextureApplyAsyncHandle(Texture2D texture)
         {
-            if (texture == null)
-            {
-                throw new ArgumentNullException(nameof(texture));
-            }
-
             Texture = texture;
-            unsafe
-            {
-                Id = NativeBridge.RegisterHandle((IntPtr) Texture.GetRawTextureData<byte>().GetUnsafeReadOnlyPtr());
-            }
+            Reinitialize();
         }
 
         ~TextureApplyAsyncHandle()
@@ -45,6 +37,24 @@ namespace Gilzoide.TextureApplyAsync
         public void CancelUpdates()
         {
             TextureAsyncApplier.Unregister(this);
+        }
+
+        public void Reinitialize()
+        {
+            if (Texture == null)
+            {
+                throw new ArgumentNullException(nameof(Texture));
+            }
+
+            if (Id != 0)
+            {
+                NativeBridge.UnregisterHandle(Id);
+            }
+            unsafe
+            {
+                Id = NativeBridge.RegisterHandle((IntPtr) Texture.GetRawTextureData<byte>().GetUnsafeReadOnlyPtr());
+            }
+            TextureAsyncApplier.MarkDirty(this);
         }
 
         public void FillCommandBuffer(CommandBuffer commandBuffer)

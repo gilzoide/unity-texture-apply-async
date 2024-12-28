@@ -25,21 +25,41 @@ public class PlasmaTextureAsyncUpdater : MonoBehaviour
     {
         if (_texture == null)
         {
-            _texture = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
+            _texture = new Texture2D(width, height, TextureFormat.RGBA32, false, false)
+            {
+                name = name
+            };
+            rawImage.texture = _texture;
         }
-        rawImage.texture = _texture;
+        else
+        {
+            _texture.Reinitialize(width, height, TextureFormat.RGBA32, false);
+            _texture.Apply();
+        }
         _textureApplyAsyncHandle = new TextureApplyAsyncHandle(_texture);
     }
 
     void OnDisable()
     {
-        _textureApplyAsyncHandle?.Dispose();
+        _textureApplyAsyncHandle.Dispose();
     }
 
     void OnDestroy()
     {
         Destroy(_texture);
     }
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (isActiveAndEnabled && _texture)
+        {
+            _texture.Reinitialize(width, height, TextureFormat.RGBA32, false);
+            _texture.Apply();
+            _textureApplyAsyncHandle.Reinitialize();
+        }
+    }
+#endif
 
     void Update()
     {
